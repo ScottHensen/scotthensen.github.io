@@ -1,0 +1,42 @@
+---
+layout: post
+title:  "SatNOGS"
+date:   2018-04-21 20:50:42 -0700
+categories: satnogs sdr
+---
+
+Typically, successful projects go **why -> what -> how**.
+
+That's the arc I took in deciding to start a SatNOGS project, but since
+I'm publishing these notes, I'm going to address the 'what' first for those who
+have not heard about SatNOGS.
+
+Satellite Networked Open Ground Stations
+
+## What
+[SatNOGS][satnogs] is an open source, DIY Satellite ground station and network.
+The ground stations that are part of the network can pick up all of the
+satellites up there, but the focus is on the ones in Low Earth Orbit.  
+
+Cubesats are going up in droves; many with research payloads.  Much of that
+data is lost because there just aren't many ground stations focusing on them,
+and many that do exist are very manual. SatNOGS is a automated, scalable
+solution.
+
+## Why
+I was super excited about the cubesat movement, so I am really excited about
+having an opportunity to actually contribute.
+
+## How
+Per the [wiki][wiki], here's how you [get started][getstarted]...
+1. Join the community
+2. Deploy a ground station to development network
+3. Create an account on the network
+4. Test your dev setup
+5. Deploy to prod  
+
+
+[satnogs]:https://satnogs.org/
+[wiki]:https://wiki.satnogs.org/Main_Page
+[getstarted]:https://wiki.satnogs.org/Get_Started
+[build]:https://wiki.satnogs.org/Build

@@ -28,7 +28,8 @@ github_username:  ScottHensen
 
 # Build settings
 markdown: kramdown
-theme: minima
+#theme: jekyll-theme-midnight
+theme: minima 
 plugins:
   - jekyll-feed
 
