@@ -31,23 +31,30 @@ down and learn some things.
 1. Find and Review Assembly instructions
 The [SatNOGS Assembly page][satnogs-assembly] provides _really nice_ step-by-step instructions with pictures.  
 2. Print [design files][satnogs-gitlab-helical-v5] for the Helical Antenna **v5**
-3. Source the parts
+3. Source the parts ...[Metal Supermarkets Phoenix][metal-supermarket]
    - 1 Pcs Aluminium (Square tubes profile 20x20mm) = 1600mm
+     - [20mm = 0.787in... 6 ft of 6063 Aluminum 3/4" square tubing]
    - 2 Pcs Aluminium (Symmetrical L profiles 15x15mm or 20x20mm) = 680mm
    - 2 Pcs Aluminium (Symmetrical L profiles 15x15mm or 20x20mm) = 420mm
+     - [15mm = 0.59 in... 4 ft of 6063 Aluminum 1/2" square tubing or 4 more feet
+      of the 3/4" tube]
    - 1 pc at least of 70Χ70cm good quality grid mesh of 2mm with at 1in (25,4 mm) spaces.
+     - [at least 28"x28" of 1" x 1/8" Steel C1018 Mesh]
    - 11 pcs Acetal rods 8mm wide and 140mm long
+     - [8mm = 0.31", 140mm = 5.5"... 6' of 3/8" plastic rod]
    - 22 Nylon nuts Μ8
+     - [if we use 3/8" plastic rods, we need 3/8 nylon nuts instead of M8]
    - 1 N-Type connector
    - Brass wire 3mm approx. 6 m
    - Brass sheet 0.3 mm thick approx 20Χ10cm
+
 4. Take instructions, plans and parts into [HeatSync Labs][heatsync]
 (local maker space) and see if they can help me.  ...I want to do it all
 myself, but I don't have the tools.
 5. Test it.
 
 ### Status
-Step 2.
+Step 3.
 
 ### The build
 
@@ -60,6 +67,7 @@ Step 2.
 [aarl-antenna-book]:https://www.arrl.org/shop/ARRL-Antenna-Book-23rd-Softcover-Edition/
 [elbert-download]:https://epdf.tips/introduction-to-satellite-communication-artech-house-space-applications.html
 [heatsync]:http://www.heatsynclabs.org
+[metal-supermarket]:https://www.metalsupermarkets.com/phoenix-southwest/
 [satnogs-assembly]:https://ohai.satnogs.org/group/hardware/
 [satnogs-community]:https://community.libre.space/t/what-anteena-to-prefer-helical-or-yagi-and-why/533/7
 [satnogs-gitlab-helical-v5]:https://gitlab.com/librespacefoundation/satnogs/satnogs-antennas/tree/master/Helical/UHF-435-8-version_5
