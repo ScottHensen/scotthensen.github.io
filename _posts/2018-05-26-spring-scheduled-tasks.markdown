@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Scheduled Tasks"
+title:  "Spring Scheduled Tasks"
 date:   2018-05-26 12:00:00 -0700
 categories: java spring scheduled task
 ---
@@ -289,9 +289,13 @@ public class TaskGetFinancialUpdatesFromIEX {
 
 # Thread pools
 It's pretty easy to configure thread pools too; the default is 1.  [Callicoder][callicoder]
-has a nice example of this.  [After getting this far, I am realizing that the gist of the Spring docs information is covered by combining the Callicoder and Baeldung blogs.]
+has a nice example of this.  [After getting this far, I am realizing that the gist of the Spring docs information is covered by combining the Callicoder and Baeldung blogs.]  
 
 
+## My Source
+[ScottHensen github][github]
+
+[github]:https://github.com/ScottHensen/toolbox-scheduled-task
 [baeldung-cron]:http://www.baeldung.com/cron-expressions
 [callicoder]:https://www.callicoder.com/spring-boot-task-scheduling-with-scheduled-annotation/
 [iex]:https://iextrading.com/

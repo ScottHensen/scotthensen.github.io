@@ -1,0 +1,292 @@
+---
+layout: post
+title:  "Spring Data Redis Cache"
+date:   2018-05-27 12:00:00 -0700
+categories: java spring redis cache
+---
+# Redis Caching
+Redis is a datastore, not just a cache mechanism, but like most folks, I am going
+to use it to cache some data.  I have an app that will be pulling data from a
+REST service frequently, but the service's latency is causing some response issues
+with my site, so I am going to build a separate polling service that will pull
+the data from the REST service every n seconds and then cache it.  This will
+run in the background, like a daemon.  Then, I will replace those slow service
+calls in my user-facing app with the faster cache calls.
+
+I learned how to build @Scheduled tasks yesterday, so today, I'm going to learn
+the REDIS part.
+
+# Getting Started
+First thing I did was go to the [redis tutorial][redis-tutorial] and run through the examples.  It's a nice, short 5-minute clever interactive tutorial.  [think I put enough adjectives on that tutorial?]
+
+Next, install it (or just use a docker image).  I run Ubuntu on Windows, so I
+was able to follow the [download instructions][redis-download].  Two caveats: 1)
+I had to put sudo in front of all the commands in the installation steps, 2) I
+kept getting a permissions denied error on the wget, so I manually downloaded the
+tarball and copied it to the /var/lib directory.
+
+**Start the Server**
+```linux
+/var/lib/redis-4.0.9/src/redis-server
+```
+**Start the CLI Client**
+```linux
+/var/lib/redis-4.0.9/src/redis-cli
+```
+**Ping the Server**
+![Redis Server & CLI consoles]({{site.baseurl}}/img/2018-05-27/redis-server-client-consoles.JPG "Redis server and cli are working")
+OK, I got some config warnings, but it the ping worked.  We're in business.
+
+# Add redis caching to a Spring Boot app
+Instead of building a separate hello-world cache example for my toolbox, I am
+adding the caching to the scheduled task I built yesterday.  
+
+**Configure the connection and the template**
+```java
+package com.scotthensen.toolbox.scheduledtask.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+
+@Configuration
+@EnableRedisRepositories
+public class RedisConfig {
+
+	@Bean
+	JedisConnectionFactory jedisConnectionFactory() {
+		//For Prod, set up a pool and use the stand-alone configuration
+		//RedisStandaloneConfiguration config = new RedisStandaloneConfiguration("localhost",6379);
+		//return new JedisConnectionFactory(config);
+		return new JedisConnectionFactory();
+	}
+
+	@Bean
+	public RedisTemplate<String, Object> redisStrObjTemplate() {
+		final RedisTemplate<String, Object> template = new RedisTemplate<String, Object>();
+		template.setConnectionFactory(jedisConnectionFactory());
+		return template;
+	}
+
+}
+```
+**Build a quote class to store in redis**
+```java
+package com.scotthensen.toolbox.scheduledtask.cache;
+
+import java.math.BigDecimal;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
+
+import com.scotthensen.toolbox.scheduledtask.domain.StockQuote;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+
+@RedisHash("Quote")
+@Data
+@NoArgsConstructor
+public class Quote {
+
+	@Id
+	private String     id;
+	@Indexed
+	private String     symbol;
+	private String     companyName;
+	private String     primaryExchange;
+	private String     sector;
+	private String     calculationPrice;
+	private BigDecimal open;
+	private BigDecimal openTime;
+	private BigDecimal close;
+	private BigDecimal closeTime;
+	private BigDecimal high;
+	private BigDecimal low;
+	private BigDecimal latestPrice;
+	private String     latestSource;
+	private String     latestTime;
+	private BigDecimal latestUpdate;
+	private BigDecimal latestVolume;
+	private BigDecimal iexRealtimePrice;
+	private BigDecimal iexRealtimeSize;
+	private BigDecimal iexLastUpdated;
+	private BigDecimal delayedPrice;
+	private BigDecimal delayedPriceTime;
+	private BigDecimal extendedPrice;
+	private BigDecimal extendedChange;
+	private BigDecimal extendedChangePercent;
+	private BigDecimal extendedPriceTime;
+	private BigDecimal change;
+	private BigDecimal changePercent;
+	private BigDecimal iexMarketPercent;
+	private BigDecimal iexVolume;
+	private BigDecimal avgTotalVolume;
+	private BigDecimal iexBidPrice;
+	private BigDecimal iexBidSize;
+	private BigDecimal iexAskPrice;
+	private BigDecimal iexAskSize;
+	private BigDecimal marketCap;
+	private BigDecimal peRatio;
+	private BigDecimal week52High;
+	private BigDecimal week52Low;
+	private BigDecimal ytdChange;
+
+
+	public Quote(StockQuote quote) {
+		this.id                    = quote.getSymbol();
+		this.symbol                = quote.getSymbol();
+		this.companyName           = quote.getCompanyName();
+		this.primaryExchange       = quote.getPrimaryExchange();
+		this.sector                = quote.getSector();
+		this.calculationPrice      = quote.getCalculationPrice();
+		this.open                  = quote.getOpen();
+		this.openTime              = quote.getOpenTime();
+		this.close                 = quote.getClose();
+		this.closeTime             = quote.getCloseTime();
+		this.high                  = quote.getHigh();
+		this.low                   = quote.getLow();
+		this.latestPrice           = quote.getLatestPrice();
+		this.latestSource          = quote.getLatestSource();
+		this.latestTime            = quote.getLatestTime();
+		this.latestUpdate          = quote.getLatestUpdate();
+		this.latestVolume          = quote.getLatestVolume();
+		this.iexRealtimePrice      = quote.getIexRealtimePrice();
+		this.iexRealtimeSize       = quote.getIexRealtimeSize();
+		this.iexLastUpdated        = quote.getIexLastUpdated();
+		this.delayedPrice          = quote.getDelayedPrice();
+		this.delayedPriceTime      = quote.getDelayedPriceTime();
+		this.extendedPrice         = quote.getExtendedPrice();
+		this.extendedChange        = quote.getExtendedChange();
+		this.extendedChangePercent = quote.getExtendedChangePercent();
+		this.extendedPriceTime     = quote.getExtendedPriceTime();
+		this.change                = quote.getChange();
+		this.changePercent         = quote.getChangePercent();
+		this.iexMarketPercent      = quote.getIexMarketPercent();
+		this.iexVolume             = quote.getIexVolume();
+		this.avgTotalVolume        = quote.getAvgTotalVolume();
+		this.iexBidPrice           = quote.getIexBidPrice();
+		this.iexBidSize            = quote.getIexBidSize();
+		this.iexAskPrice           = quote.getIexAskPrice();
+		this.iexAskSize            = quote.getIexAskSize();
+		this.marketCap             = quote.getMarketCap();
+		this.peRatio               = quote.getPeRatio();
+		this.week52High            = quote.getWeek52High();
+		this.week52Low             = quote.getWeek52Low();
+		this.ytdChange             = quote.getYtdChange();
+	}
+
+}
+```
+**Build a CRUD Repository interface**
+```java
+package com.scotthensen.toolbox.scheduledtask.repository;
+
+import java.util.Optional;
+
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+
+import com.scotthensen.toolbox.scheduledtask.cache.Quote;
+
+
+@Repository
+public interface QuoteRepository extends CrudRepository<Quote, String>{
+
+	Optional<Quote> findBySymbol(String symbol);
+}
+```
+**Modify the scheduled task to cache the quotes**
+```java
+package com.scotthensen.toolbox.scheduledtask;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.scotthensen.toolbox.scheduledtask.cache.Quote;
+import com.scotthensen.toolbox.scheduledtask.domain.CompanyInfo;
+import com.scotthensen.toolbox.scheduledtask.domain.StockQuote;
+import com.scotthensen.toolbox.scheduledtask.repository.QuoteRepository;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Component
+public class TaskGetFinancialUpdatesFromIEX<K,V> {
+
+	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss:SSS Z");
+	private static final String IEX_URL        = "https://api.iextrading.com/1.0";
+	private static final String TESLA_QUOTE    = "/stock/tsla/quote";
+	private static final String TESLA_COMPANY  = "/stock/tsla/company";
+
+	@Autowired
+	private RedisTemplate<String, Object> template;
+
+	@Autowired
+	private QuoteRepository quoteRepository;
+
+	@Scheduled(fixedDelay = 10000)
+	public void getStockQuote() throws JsonProcessingException {
+		log.info("The time is now {}", dateFormat.format(new Date()), " ... start getStockQuote");
+
+		RestTemplate restTemplate = new RestTemplate();
+
+		StockQuote quote = restTemplate.getForObject(IEX_URL+TESLA_QUOTE, StockQuote.class);
+		log.info("\n>>> quote= " + quote.toString());
+
+		quoteRepository.save(new Quote(quote));
+
+		Optional<Quote> cachedQuote = quoteRepository.findBySymbol(quote.getSymbol());
+		cachedQuote.ifPresent(q -> log.info("\n>>> cached quote= " + q.toString()));
+
+		log.info("The time is now {}", dateFormat.format(new Date()), " ... stop  getStockQuote");		
+	}
+
+	@Scheduled(cron = "0/30 * * * * *")
+	public void getCompanyInfo() {
+		log.info("The time is now {}", dateFormat.format(new Date()), " ... start getStockQuote");
+
+		RestTemplate restTemplate = new RestTemplate();
+		CompanyInfo company = restTemplate.getForObject(IEX_URL+TESLA_COMPANY, CompanyInfo.class);
+		log.info(company.toString());
+
+		log.info("The time is now {}", dateFormat.format(new Date()), " ... stop  getStockQuote");		
+	}
+
+}
+```
+**Results - Spring Boot Console**
+![Spring Boot Console]({{site.baseurl}}/img/2018-05-27/spring-boot-console.JPG "Console shows task running a couple times; pullinq quotes and caching them.")
+
+**Results - Redis Client Console**
+![Redis Client Console]({{site.baseurl}}/img/2018-05-27/redis-client-console.JPG "Console shows keys stored in redis")
+
+**Credits**  
+These two sites were very helpful in getting this working.
+* [Spring Data Examples GitHub][github-spring-data-redis]
+* [Baeldung's Introduction to Spring Data Redis][baeldung-intro-spring-data-redis]
+
+
+## My Source
+[ScottHensen github][github]
+
+
+
+[github]:https://github.com/ScottHensen/toolbox-scheduled-task
+[baeldung-intro-spring-data-redis]:http://www.baeldung.com/spring-data-redis-tutorial
+[github-spring-data-redis]:https://github.com/spring-projects/spring-data-examples/tree/master/redis/repositories
+[redis-tutorial]:http://try.redis.io/
+[redis-download]:https://redis.io/download
+[redis-install-video]:https://www.youtube.com/watch?v=ncFhlv-gBXQ
