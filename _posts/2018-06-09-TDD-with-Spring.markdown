@@ -220,5 +220,5 @@ public class PortfolioRestController {
 
 
 [bootiful-testing]:https://www.youtube.com/watch?v=k3M_yifZvYg
-[github-service]:https://github.com/ScottHensen/portfolio-service
-[github-client]:https://github.com/ScottHensen/portfolio
+[github-service]:https://github.com/ScottHensen/toolbox-portfolio-service
+[github-client]:https://github.com/ScottHensen/toolbox-portfolio
