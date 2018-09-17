@@ -63,7 +63,7 @@ Here they are...
 
 **The Goal:**  This is what our project will look like once we've finished the scaffolding.  
 
-... ![Project Structure]({{site.baseurl}}/img/2018-09-15/project-structure.JPG "Project Structure")  
+   ![Project Structure]({{site.baseurl}}/img/2018-09-15/project-structure.JPG "Project Structure" )  
 
 
 **Create a Parent Project**
