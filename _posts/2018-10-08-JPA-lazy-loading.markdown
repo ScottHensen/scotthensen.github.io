@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "JPA"
-date:   2018-10-09 12:00:00 -0700
+date:   2018-10-08 12:00:00 -0700
 categories: java spring data jpa
 ---
 # Spring Data JPA - a dumb way to negate your lazy loading
